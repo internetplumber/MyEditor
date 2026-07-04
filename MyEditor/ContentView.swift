@@ -71,13 +71,31 @@ struct ContentView: View {
         .preferredColorScheme(currentTheme.colorScheme)
         .toolbar {
             ToolbarItemGroup {
-                Button(action: { showImporter = true }) { Label("Open", systemImage: "doc.badge.plus") }
-                Button(action: { showExporter = true }) { Label("Save As", systemImage: "doc.badge.arrow.up") }
-                Button(action: { showGutter.toggle() }) { Label("Toggle Gutter", systemImage: "sidebar.left") }
-                Button(action: { showSearch.toggle() }) { Label("Find", systemImage: "magnifyingglass") }
+                Button(action: { showImporter = true }) {
+                    Label("Open", systemImage: "doc.badge.plus")
+                }
+                .help("Open a plain text file from disk (⌘O)") // Tooltip tracking anchor
+                
+                Button(action: { showExporter = true }) {
+                    Label("Save As", systemImage: "doc.badge.arrow.up")
+                }
+                .help("Save the current text document to disk (⌘S)")
+                
                 Button(action: { isLineWrapped.toggle() }) {
                     Label("Toggle Wrap", systemImage: isLineWrapped ? "text.alignleft" : "line.3.horizontal")
                 }
+                .help(isLineWrapped ? "Disable line wrapping" : "Enable line wrapping") // Dynamic tooltip
+                
+                Button(action: { showGutter.toggle() }) {
+                    Label("Toggle Gutter", systemImage: "sidebar.left")
+                }
+                .help("Show or hide the line number sidebar")
+                
+                Button(action: { showSearch.toggle() }) {
+                    Label("Find", systemImage: "magnifyingglass")
+                }
+                .help("Open the Find and Replace layout utility")
+                
                 // Streamlined Theme Popover Selection Menu
                 Menu {
                     ForEach(ThemeSetting.allCases) { setting in
@@ -93,10 +111,11 @@ struct ContentView: View {
                 } label: {
                     Label("Theme", systemImage: "paintbrush")
                 }
-                .menuStyle(.borderlessButton) // Strips the bulky picker wrapper padding
-                .frame(width: 38) // Locks structural boundaries to standard square icon proportions
-
+                .menuStyle(.borderlessButton)
+                .frame(width: 38)
+                .help("Change the application appearance theme")
             }
+
         }
         // .commands block has been cleanly extracted from here
         .fileImporter(isPresented: $showImporter, allowedContentTypes: [.plainText], allowsMultipleSelection: false, onCompletion: loadFile)
@@ -119,7 +138,10 @@ struct ContentView: View {
             }
             .toggleStyle(.checkbox)
             
-            Button("Replace All", action: replaceAll).buttonStyle(.borderedProminent)
+            Button("Replace All", action: replaceAll)
+                .buttonStyle(.borderedProminent)
+                .help("Execute regex or standard text substitutions globally")
+
             Button("Hide") { showSearch = false }.buttonStyle(.borderless)
         }
         .padding(.horizontal).padding(.vertical, 8)
